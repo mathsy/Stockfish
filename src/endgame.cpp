@@ -570,7 +570,7 @@ ScaleFactor Endgame<KRPPKRP>::operator()(const Position& pos) const {
       && relative_rank(strongSide, weakKing) > pawnRank)
   {
       assert(pawnRank > RANK_1 && pawnRank < RANK_7);
-      return ScaleFactor(7 * pawnRank);
+      return ScaleFactor(8 * pawnRank);
   }
   return SCALE_FACTOR_NONE;
 }
