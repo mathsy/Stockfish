@@ -476,6 +476,9 @@ ScaleFactor Endgame<KRPKR>::operator()(const Position& pos) const {
       && (distance(strongKing, queeningSquare) < distance(weakKing, strongRook) + tempo))
       return ScaleFactor(SCALE_FACTOR_MAX - 2 * distance(strongKing, queeningSquare));
 
+    int pawnfact = 8; //For tuning
+    int kingfact = 2; //For tuning
+    TUNE(pawnfact, kingfact);
   // Similar to the above, but with the pawn further back
   if (   pawnFile != FILE_A
       && file_of(strongRook) == pawnFile
@@ -486,8 +489,8 @@ ScaleFactor Endgame<KRPKR>::operator()(const Position& pos) const {
           || (    distance(strongKing, queeningSquare) < distance(weakKing, strongRook) + tempo
               && (distance(strongKing, strongPawn + NORTH) < distance(weakKing, strongPawn) + tempo))))
       return ScaleFactor(  SCALE_FACTOR_MAX
-                         - 8 * distance(strongPawn, queeningSquare)
-                         - 2 * distance(strongKing, queeningSquare));
+                         - pawnfact * distance(strongPawn, queeningSquare)
+                         - kingfact * distance(strongKing, queeningSquare));
 
   // If the pawn is not far advanced and the defending king is somewhere in
   // the pawn's path, it's probably a draw.
@@ -560,6 +563,9 @@ ScaleFactor Endgame<KRPPKRP>::operator()(const Position& pos) const {
   Square weakKing = pos.square<KING>(weakSide);
 
   // Does the stronger side have a passed pawn?
+  
+  int passfact = 7;
+  TUNE(passfact);
   if (pos.pawn_passed(strongSide, strongPawn1) || pos.pawn_passed(strongSide, strongPawn2))
       return SCALE_FACTOR_NONE;
 
@@ -570,10 +576,11 @@ ScaleFactor Endgame<KRPPKRP>::operator()(const Position& pos) const {
       && relative_rank(strongSide, weakKing) > pawnRank)
   {
       assert(pawnRank > RANK_1 && pawnRank < RANK_7);
-      return ScaleFactor(7 * pawnRank);
+      return ScaleFactor(passfact * pawnRank);
   }
   return SCALE_FACTOR_NONE;
 }
+
 
 
 /// K and two or more pawns vs K. There is just a single rule here: if all pawns
